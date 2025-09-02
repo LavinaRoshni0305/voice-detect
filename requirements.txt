@@ -1,7 +1,7 @@
 gunicorn
-sounddevice
 flask
 flask-cors
-whisper
-torch
+faster-whisper
 numpy
+soundfile
+torch
