@@ -8,7 +8,7 @@ CORS(app)
 
 @app.route('/')
 def home():
-    return jsonify({"status": "Voice Backend is running"})
+    return jsonify({"status": "Backend is running"})
 
 @app.route('/voice/detect', methods=['POST'])
 def voice_detect():
@@ -16,14 +16,13 @@ def voice_detect():
     if not audio_file:
         return jsonify({"error": "No audio file received"}), 400
 
-    save_dir = "temp"
-    os.makedirs(save_dir, exist_ok=True)
-    save_path = os.path.join(save_dir, audio_file.filename)
+    os.makedirs("temp", exist_ok=True)
+    save_path = os.path.join("temp", audio_file.filename)
     audio_file.save(save_path)
 
     result = detect_voice(save_path)
-    return jsonify(result)
+    return jsonify({"trigger": result})
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
