@@ -4,5 +4,4 @@ openai
 gunicorn
 whisper
 sounddevice
-queue
 numpy
