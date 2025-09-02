@@ -1,22 +1,24 @@
-import whisper
-import os
+from faster_whisper import WhisperModel
+import numpy as np
+import soundfile as sf
 
-# Load model once at startup
-model = whisper.load_model("base")
+# Load the model once
+model_size = "small"  # or "base", "medium" (larger = more accurate)
+model = WhisperModel(model_size)
 
-# Define trigger phrases
-trigger_phrases = ["help", "emergency", "sos", "save me"]
+# Emergency trigger phrases
+trigger_phrases = ["help me luna", "sos", "emergency", "save me"]
 
-def detect_voice(audio_path):
-    """
-    Transcribe audio and check for emergency phrases.
-    """
-    if not os.path.exists(audio_path):
-        return {"triggered": False, "error": "File not found"}
-
-    result = model.transcribe(audio_path)
-    text = result["text"].lower()
-
+def detect_voice(file_path):
+    audio, samplerate = sf.read(file_path)
+    segments, info = model.transcribe(audio, beam_size=5)
+    text = ""
+    for segment in segments:
+        text += segment.text.lower() + " "
+    
+    print("[VOICE MODEL] Recognized:", text)
+    
     if any(phrase in text for phrase in trigger_phrases):
-        return {"triggered": True, "transcript": text}
-    return {"triggered": False, "transcript": text}
+        print("🚨 Emergency Triggered via Voice Command!")
+        return "voice_detected"
+    return "no_voice"
